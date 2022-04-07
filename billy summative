@@ -1,0 +1,217 @@
+# ticket is a of object of user's booking
+
+global tickets
+
+tickets = {}
+
+# user registration
+
+def Register():
+
+# show a welcome message
+
+print("Welcome to the movie theater!")
+
+# asks for user's name and phone number
+
+name = input("What is your name? ")
+
+phone = input("What is your phone number? ")
+
+# validate phone number using loop
+
+""" phone number must be digits and length of 10 """
+
+while phone.isdigit() != True or len(phone) != 10:
+
+print("Phone number must be 10 digits.")
+
+phone = input("Please enter a valid phone number: ")
+
+return name, phone
+
+# create list of movies
+
+global movies
+
+movies = ["Terminator", "Star Wars", "The Matrix", "The Godfather", "The Shawshank Redemption", "The Dark Knight", "The Godfather II", "The Lord of the Rings", "Avengers End Game"]
+
+# create seats
+
+global seats
+
+seats = []
+
+# seats for each movie
+
+for i in range(len(movies)):
+
+seats.append({})
+
+seats[i]["morning"] = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
+
+seats[i]["afternoon"] = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
+
+seats[i]["evening"] = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
+
+# show list of movies and ask for select one
+
+def Movies():
+
+print("Movies available:")
+
+for i in range(len(movies)) :
+
+print("{}) {}".format(i+1, movies[i]))
+
+# ask user to select a movie for book ticket
+
+movie_choice = int(input("Please select a movie(number): "))
+
+# validate user's choice
+
+while movie_choice < 1 or movie_choice > len(movies):
+
+print("No movie exists.\nPlease select a valid movie number.")
+
+movie_choice = int(input("Please select a movie: "))
+
+# return index of movie
+
+return movie_choice - 1
+
+# ask user to select a session time
+
+def Session():
+
+# ask user to select a session time
+
+session_choice = input("Please select a session time: ").lower()
+
+# validate user's choice
+
+while session_choice != "morning" and session_choice != "afternoon" and session_choice != "evening":
+
+print("No session exists.\nPlease select a valid session time(morning, afternoon, evening).")
+
+session_choice = input("Please select a session time: ")
+
+return session_choice
+
+# show seats to user and ask for select a seat
+
+def SelectSeat(movie_index, session):
+
+print("Seats available: ")
+
+# gets the list of seats for the selected movie and session
+
+_seats = seats[movie_index][session]
+
+# print the seats
+
+for i in range(len(_seats)):
+
+# we assume 3 seats in a row
+
+if(i%3 == 0):
+
+print("\n")
+
+print("[{}]".format(_seats[i]), end=" ")
+
+# ask user to select a seat
+
+selected_seat = input("\nPlease select a seat(number): ")
+
+# validate user's seat choice
+
+# the seats marked with an X are booked
+
+while selected_seat == 'X' or selected_seat not in _seats:
+
+print("seats marked with an X are booked.\nPlease select a valid seat.")
+
+selected_seat = input("Please select a seat(number): ")
+
+# remove the selected seat from the list of available seats
+
+_seats[int(selected_seat)-1] = "X"
+
+return selected_seat
+
+def BookTicket(name, phone, movie_number, session, seat_select):
+
+# add the selected movie and session to the list of movies and sessions
+
+tickets[phone]["movies"].append(
+
+{"username":name,
+
+"name" : movies[movie_number],
+
+"session" : session,
+
+"book_seat" : seat_select
+
+}
+
+)
+
+def main():
+
+global tickets
+
+# call Register function
+
+name, phone = Register()
+
+movie_number = Movies()
+
+session = Session()
+
+# ask user to select a seat
+
+seat_select = SelectSeat(movie_number, session)
+
+# phone is unique, Therefore used as a key to store user's booking
+
+#if phone not present create new movies list
+
+if phone not in tickets:
+
+tickets[phone] = {"movies" : []}
+
+print("\nYou have selected {} for {} at seat number {}.\n"
+
+.format(movies[movie_number], session, seat_select))
+
+# ask user to confirm the booking
+
+choice = input("Confirm booking? (y/n) ").lower()
+
+if choice == "y":
+
+BookTicket(name, phone, movie_number, session, seat_select)
+
+print("\nYour booking has been confirmed.\n")
+
+elif choice == "n":
+
+print("\nYour booking has been cancelled.\n")
+
+# ask user if they want to book another ticket
+
+choice = input("Book another ticket? (y/n) ").lower()
+
+if choice == "y":
+
+main()
+
+elif choice == "n":
+
+print("Book Tickets:\n", tickets)
+
+print("\nThank you for booking with us.\n")
+
+main()
